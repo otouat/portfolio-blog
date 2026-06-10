@@ -1,12 +1,9 @@
 ---
-title: 分类
+title: Categories
 layout: page
 ---
 
 <Category>
-  <template #doc-after>
-    <AdItem :custom="ads" type="doc" />
-  </template>
 </Category>
 
 <script lang="ts" setup>
@@ -19,7 +16,7 @@ const { params, site } = useData();
 
 onMounted(() => {
   if (params.value?.category && params.value.category !== 'index') {
-    document.title = `分类：${params.value.category} | ${site.value.titleTemplate}`;
+      document.title = `Category: ${params.value.category} | ${site.value.titleTemplate}`;
   }
 });
 </script>

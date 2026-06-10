@@ -1,12 +1,10 @@
 ---
-title: 标签
+title: Tags
 layout: page
 ---
 
 <Category type="tag">
-  <template #doc-after>
-    <AdItem :custom="ads" type="doc" />
-  </template>
+
 </Category>
 
 <script lang="ts" setup>

@@ -1,17 +1,17 @@
-import fs from 'fs/promises';
-import path from 'path';
-import matter from 'gray-matter';
-import fg from 'fast-glob';
-import removeMd from 'remove-markdown';
-import { IPost, IPostsConfig } from '../types';
-import { generatePages } from '../utils/generatePages';
-import { generateString } from '../utils/generateString';
-import { generateCategory } from '../utils/generateCategory';
-import { formatDate } from '../utils/formatDate';
-import { HeadConfig } from 'vitepress';
+import fs from "fs/promises";
+import path from "path";
+import matter from "gray-matter";
+import fg from "fast-glob";
+import removeMd from "remove-markdown";
+import { IPost, IPostsConfig } from "../types";
+import { generatePages } from "../utils/generatePages";
+import { generateString } from "../utils/generateString";
+import { generateCategory } from "../utils/generateCategory";
+import { formatDate } from "../utils/formatDate";
+import { HeadConfig } from "vitepress";
 
 // 是否生产环境
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === "production";
 
 /**
  * 格式化/补全 FrontMatter
@@ -20,7 +20,11 @@ const isProd = process.env.NODE_ENV === 'production';
  * @param srcDir src 路径
  * @returns 是否更改
  */
-const formatFrontMatter = async (frontMatter: IPost, postPath: string, srcDir: string) => {
+const formatFrontMatter = async (
+  frontMatter: IPost,
+  postPath: string,
+  srcDir: string,
+) => {
   let changed = false;
   let { id, title, datetime, tags, hidden } = frontMatter;
 
@@ -49,7 +53,7 @@ const formatFrontMatter = async (frontMatter: IPost, postPath: string, srcDir: s
 
     // 遍历每一项，转换为字符串（支持将标签设置为 'null' 'undefined'）
     frontMatter.tags.forEach((tag, index) => {
-      if (typeof tag !== 'string') {
+      if (typeof tag !== "string") {
         frontMatter.tags[index] = String(tag);
         changed = true;
       }
@@ -58,8 +62,13 @@ const formatFrontMatter = async (frontMatter: IPost, postPath: string, srcDir: s
 
   // 隐藏文章时自动添加 noindex meta
   if (hidden) {
-    const noindexMeta: HeadConfig = ['meta', { name: 'robots', content: 'noindex, nofollow' }];
-    const alreadyExists = (frontMatter.head ?? []).some((item) => Array.isArray(item) && item[1]?.name === 'robots');
+    const noindexMeta: HeadConfig = [
+      "meta",
+      { name: "robots", content: "noindex, nofollow" },
+    ];
+    const alreadyExists = (frontMatter.head ?? []).some(
+      (item) => Array.isArray(item) && item[1]?.name === "robots",
+    );
     if (!alreadyExists) {
       frontMatter.head = [...(frontMatter.head ?? []), noindexMeta];
       changed = true;
@@ -74,30 +83,34 @@ const formatFrontMatter = async (frontMatter: IPost, postPath: string, srcDir: s
  * @param content 文章内容
  * @param frontMatter FrontMatter 数据
  */
-const writeMd = async (path: string, content: string, frontMatter: { [key: string]: any }) => {
+const writeMd = async (
+  path: string,
+  content: string,
+  frontMatter: { [key: string]: any },
+) => {
   const matters = [
-    'draft',
-    'hidden',
-    'order',
-    'pinned',
-    'password',
-    'id',
-    'title',
-    'datetime',
-    'permalink',
-    'outline',
-    'excerpt',
-    'category',
-    'tags',
-    'prev',
-    'next',
-    'head'
+    "draft",
+    "hidden",
+    "order",
+    "pinned",
+    "password",
+    "id",
+    "title",
+    "datetime",
+    "permalink",
+    "outline",
+    "excerpt",
+    "category",
+    "tags",
+    "prev",
+    "next",
+    "head",
   ];
   const newMarkdown = matter.stringify(content, frontMatter, {
     // @ts-ignore
-    sortKeys: (a: string, b: string) => matters.indexOf(a) - matters.indexOf(b)
+    sortKeys: (a: string, b: string) => matters.indexOf(a) - matters.indexOf(b),
   });
-  await fs.writeFile(path, newMarkdown, 'utf8');
+  await fs.writeFile(path, newMarkdown, "utf8");
 };
 
 /**
@@ -108,15 +121,15 @@ const writeMd = async (path: string, content: string, frontMatter: { [key: strin
 const removeMdPro = (str: string) => {
   return removeMd(
     str
-      .replace(/```.*?```/gs, '')
-      .replace(/^#+\s.*$/gm, '')
-      .replace(/^>.*$/gm, '')
+      .replace(/```.*?```/gs, "")
+      .replace(/^#+\s.*$/gm, "")
+      .replace(/^>.*$/gm, ""),
   ) // 移除代码块、标题、引用
     .trim() // 移除空格
     .split(/\r\n|\n|\r/)
-    .join(' ') // 移除换行
-    .replace(/\s{2,}/g, ' ')
-    .replace(/:::.*?:::/gs, '') // 移除 :::
+    .join(" ") // 移除换行
+    .replace(/\s{2,}/g, " ")
+    .replace(/:::.*?:::/gs, "") // 移除 :::
     .trim();
 };
 
@@ -127,7 +140,11 @@ const removeMdPro = (str: string) => {
  * @param nav 是否启用上一篇/下一篇
  * @returns 是否发生变更
  */
-const updateNav = (frontMatter: IPost, posts: IPost[], nav: boolean): boolean => {
+const updateNav = (
+  frontMatter: IPost,
+  posts: IPost[],
+  nav: boolean,
+): boolean => {
   // nav 关闭、置顶、隐藏或草稿文章：清除已有的 prev / next
   if (!nav || frontMatter.hidden || frontMatter.draft) {
     const hadNav = !!(frontMatter.prev || frontMatter.next);
@@ -137,14 +154,20 @@ const updateNav = (frontMatter: IPost, posts: IPost[], nav: boolean): boolean =>
   }
 
   // nav 开启时，根据相邻文章更新
-  const index = posts.findIndex((post) => post.permalink === frontMatter.permalink);
+  const index = posts.findIndex(
+    (post) => post.permalink === frontMatter.permalink,
+  );
   const prevPost = posts[index - 1];
   const nextPost = posts[index + 1];
   let changed = false;
 
   // 设置或更新 prev
   if (prevPost) {
-    if (!frontMatter.prev || frontMatter.prev.text !== prevPost.title || frontMatter.prev.link !== prevPost.permalink) {
+    if (
+      !frontMatter.prev ||
+      frontMatter.prev.text !== prevPost.title ||
+      frontMatter.prev.link !== prevPost.permalink
+    ) {
       frontMatter.prev = { text: prevPost.title, link: prevPost.permalink };
       changed = true;
     }
@@ -155,7 +178,11 @@ const updateNav = (frontMatter: IPost, posts: IPost[], nav: boolean): boolean =>
 
   // 设置或更新 next
   if (nextPost) {
-    if (!frontMatter.next || frontMatter.next.text !== nextPost.title || frontMatter.next.link !== nextPost.permalink) {
+    if (
+      !frontMatter.next ||
+      frontMatter.next.text !== nextPost.title ||
+      frontMatter.next.link !== nextPost.permalink
+    ) {
       frontMatter.next = { text: nextPost.title, link: nextPost.permalink };
       changed = true;
     }
@@ -170,15 +197,15 @@ const updateNav = (frontMatter: IPost, posts: IPost[], nav: boolean): boolean =>
 const defaultConfig: Required<IPostsConfig> = {
   pageSize: 10,
   homepage: true,
-  srcDir: 'posts',
-  outDir: '',
-  lang: 'zh',
+  srcDir: "posts",
+  outDir: "",
+  lang: "en",
   excerpt: 0,
-  permalink: 'posts',
+  permalink: "posts",
   nav: false,
-  slot: '',
-  custom: '',
-  postCount: 0
+  slot: "",
+  custom: "",
+  postCount: 0,
 };
 
 export const usePosts = async (userConfig: IPostsConfig = {}) => {
@@ -191,7 +218,10 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
     let categoryFlag = false;
 
     // 缓存每篇文章的原始 frontMatter 和 content，供后续 prev/next 处理复用，避免二次 matter.read
-    const postCache = new Map<string, { frontMatter: IPost; content: string; changed: boolean }>();
+    const postCache = new Map<
+      string,
+      { frontMatter: IPost; content: string; changed: boolean }
+    >();
     const descriptionMap = new Map<string, string>();
 
     // 一、原始文章列表（包含隐藏文章）
@@ -200,14 +230,21 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
         const {
           data,
           excerpt: _excerpt,
-          content
+          content,
         } = matter.read(postPath, {
           excerpt: true,
-          excerpt_separator: '<!--more-->'
+          excerpt_separator: "<!--more-->",
         });
         const frontMatter = data as IPost;
 
-        const { category, tags, description, draft, id, permalink: _permalink } = frontMatter;
+        const {
+          category,
+          tags,
+          description,
+          draft,
+          id,
+          permalink: _permalink,
+        } = frontMatter;
 
         // 1. 检测是否存在分类/标签，生成分类页面（暂不启用）
         // if (!categoryFlag && (category || tags)) {
@@ -220,11 +257,14 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
         postCache.set(postPath, { frontMatter, content, changed });
 
         // 3. 处理文章摘要 excerpt (自定义摘要 -> 手动摘要 -> 按字数自动摘要)
-        const excerpt = description || removeMdPro(_excerpt + '') || removeMdPro(content).slice(0, config.excerpt);
+        const excerpt =
+          description ||
+          removeMdPro(_excerpt + "") ||
+          removeMdPro(content).slice(0, config.excerpt);
         descriptionMap.set(id, excerpt);
 
         // 4. 处理永久链接 permalink (自定义链接 -> 按 ID 生成链接 -> 按路径生成链接)
-        let permalink: string = postPath.replace(/\.md$/, '');
+        let permalink: string = postPath.replace(/\.md$/, "");
 
         if (!draft) {
           if (_permalink) {
@@ -235,30 +275,40 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
         }
 
         // 判断是否需要重写路由
-        if (permalink !== postPath.replace(/\.md$/, '')) {
+        if (permalink !== postPath.replace(/\.md$/, "")) {
           // rewrites 中统一去除开头的 /
-          rewrites[postPath.replace(/[+()]/g, '\\$&')] = `${permalink}.md`.replace(/^\//, '').replace(/[+()]/g, '\\$&');
+          rewrites[postPath.replace(/[+()]/g, "\\$&")] = `${permalink}.md`
+            .replace(/^\//, "")
+            .replace(/[+()]/g, "\\$&");
         }
 
         // permalink 统一加上开头的 / (必须放后面，否则会影响 rewrites 的 if 判断)
-        permalink = permalink.replace(/^\/?/, '/');
+        permalink = permalink.replace(/^\/?/, "/");
 
         return {
           ...frontMatter,
           permalink,
-          excerpt
+          excerpt,
         } as IPost;
-      })
+      }),
     );
 
     // 二、隐藏列表 (用于 sitemap 中排除隐藏文章) / 草稿列表 (用于 srcExclude 中排除构建)
-    const hiddenPosts = new Set(results.filter((post) => post.hidden).map((post) => post.permalink.replace(/^\//, '')));
-    const excludePosts = paths.filter((postPath) => postCache.get(postPath).frontMatter.draft);
+    const hiddenPosts = new Set(
+      results
+        .filter((post) => post.hidden)
+        .map((post) => post.permalink.replace(/^\//, "")),
+    );
+    const excludePosts = paths.filter(
+      (postPath) => postCache.get(postPath).frontMatter.draft,
+    );
 
     // 三、实际文章列表（按置顶 + 时间排序）
     // 开发环境：不过滤直接排序
     // 生产环境：过滤隐藏文章和草稿
-    const posts = (isProd ? results.filter((post) => !post.hidden && !post.draft) : results).sort((a, b) => {
+    const posts = (
+      isProd ? results.filter((post) => !post.hidden && !post.draft) : results
+    ).sort((a, b) => {
       // 优先按置顶排序
       if (a.order && b.order) return a.order - b.order;
       if (a.order) return -1;
@@ -272,8 +322,9 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
       paths.map(async (postPath) => {
         const { frontMatter, content, changed } = postCache.get(postPath)!;
         const navChanged = updateNav(frontMatter, posts, nav);
-        if (changed || navChanged) await writeMd(postPath, content, frontMatter);
-      })
+        if (changed || navChanged)
+          await writeMd(postPath, content, frontMatter);
+      }),
     );
 
     // 统计文章总数（不含隐藏文章）
@@ -282,7 +333,13 @@ export const usePosts = async (userConfig: IPostsConfig = {}) => {
     return { posts, hiddenPosts, excludePosts, rewrites, descriptionMap };
   } catch (e) {
     console.error(e);
-    return { posts: [], hiddenPosts: new Set<string>(), excludePosts: [], rewrites, descriptionMap: new Map<string, string>() };
+    return {
+      posts: [],
+      hiddenPosts: new Set<string>(),
+      excludePosts: [],
+      rewrites,
+      descriptionMap: new Map<string, string>(),
+    };
   } finally {
     // 五、最终生成分页（首页与文章列表）
     await generatePages(config);

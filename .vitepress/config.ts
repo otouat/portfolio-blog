@@ -1,48 +1,34 @@
-import { defineConfig } from 'vitepress';
-import { usePosts } from '../src/composables/usePosts';
-import { hashPassword } from '../src/utils/hashPassword';
-import type { ThemeConfig } from '../src/types';
+import { defineConfig } from "vitepress";
+import { usePosts } from "../src/composables/usePosts";
+import { hashPassword } from "../src/utils/hashPassword";
+import type { ThemeConfig } from "../src/types";
 
-const slot = `
-<template #doc-after>
-  <AdItem :custom="ads" type="doc" />
-</template>
-`;
-
-const custom = `
-<script lang="ts" setup>
-import AdItem from '/src/components/AdItem.vue';
-import { ads } from '/.vitepress/theme/ads.ts';
-</script>
-`;
-
-const { posts, hiddenPosts, excludePosts, descriptionMap, rewrites } = await usePosts({
-  pageSize: 6,
-  homepage: false,
-  srcDir: 'posts',
-  excerpt: 150,
-  slot,
-  custom
-});
-
+const { posts, hiddenPosts, excludePosts, descriptionMap, rewrites } =
+  await usePosts({
+    pageSize: 6,
+    homepage: false,
+    srcDir: "posts",
+    excerpt: 150,
+  });
 export default defineConfig<ThemeConfig>({
-  title: '只抄',
-  titleTemplate: 'VitePress Theme Minimalism',
-  description: 'VitePress Theme Minimalism',
+  title: "My Blog",
+  titleTemplate: "My Blog",
+  description: "My personal blog",
   rewrites,
   cleanUrls: true,
   ignoreDeadLinks: true,
   lastUpdated: true,
   sitemap: {
-    hostname: 'https://tsx.dpdns.org',
+    hostname: "https://yourdomain.com",
     transformItems: (items) => {
-      return items.filter((item) => !hiddenPosts.has(item.url.replace(/\.html$/, '')));
-    }
+      return items.filter(
+        (item) => !hiddenPosts.has(item.url.replace(/\.html$/, "")),
+      );
+    },
   },
   transformPageData(pageData) {
     const { frontmatter, description } = pageData;
     const { id, password } = frontmatter;
-
     if (password) {
       frontmatter.password = hashPassword(String(password));
     }
@@ -53,41 +39,26 @@ export default defineConfig<ThemeConfig>({
   themeConfig: {
     posts,
     page: {
-      max: 5
+      max: 5,
     },
     classicCategory: false,
     transition: true,
-    logo: '/profile.png',
+    logo: "/profilePic.jpg",
     outline: { level: 2 },
     nav: [
-      { text: '首页', link: '/' },
-      { text: '文章', link: '/page-1' },
-      { text: '分类(旧版)', link: '/category' },
-      { text: '分类', link: '/category/' },
-      { text: '标签', link: '/tags/' },
-      { text: '归档', link: '/archives' },
-      { text: '文档', link: '/docs/doc1' }
+      { text: "Home", link: "/" },
+      { text: "Posts", link: "/page-1" },
+      { text: "Category", link: "/category" },
+      { text: "Archives", link: "/archives" },
+      { text: "About Me", link: "/about" },
     ],
-    sidebar: {
-      '/docs': [
-        {
-          text: '如何使用电饭煲',
-          items: [
-            { text: '选择合适的电饭煲', link: '/docs/doc1' },
-            { text: '煮出松软米饭的技巧', link: '/docs/doc2' },
-            { text: '电饭煲的多功能用途', link: '/docs/doc3' },
-            { text: '电饭煲的清洁与保养', link: '/docs/doc4' },
-            { text: '电饭煲常见问题处理', link: '/docs/doc5' }
-          ]
-        }
-      ]
-    },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/izhichao/vitepress-theme-minimalism' }],
+    socialLinks: [{ icon: "github", link: "https://github.com/otouat" }],
     footer: {
-      message: 'Theme by <a href="https://github.com/izhichao/vitepress-theme-minimalism" target="_blank">Minimalism</a>',
-      copyright: `Copyright © 2017-${new Date().getFullYear()} <a href="https://github.com/izhichao" target="_blank">只抄</a>`
+      message:
+        'Theme by <a href="https://github.com/izhichao/vitepress-theme-minimalism" target="_blank">Minimalism</a>',
+      copyright: `Copyright © 2024-${new Date().getFullYear()} <a href="https://github.com/otouat" target="_blank">Ousmane Touat</a>`,
     },
-    search: { provider: 'local' }
+    search: { provider: "local" },
   },
   markdown: {
     lineNumbers: true,
@@ -95,11 +66,11 @@ export default defineConfig<ThemeConfig>({
       md.use((md) => {
         md.renderer.rules.heading_close = (tokens, idx, options, env, slf) => {
           let htmlResult = slf.renderToken(tokens, idx, options);
-          if (tokens[idx].tag === 'h1') htmlResult += `<PostMeta />`;
+          if (tokens[idx].tag === "h1") htmlResult += `<PostMeta />`;
           return htmlResult;
         };
       });
-    }
+    },
   },
-  srcExclude: [...excludePosts, 'README.md', 'README_en-US.md']
+  srcExclude: ["README.md", "README_en-US.md"],
 });
