@@ -11,6 +11,9 @@ const { posts, hiddenPosts, excludePosts, descriptionMap, rewrites } =
     excerpt: 150,
   });
 export default defineConfig<ThemeConfig>({
+  // Add this line right here
+  base: "/portfolio-blog/",
+
   title: "My Blog",
   titleTemplate: "My Blog",
   description: "My personal blog",
@@ -19,7 +22,8 @@ export default defineConfig<ThemeConfig>({
   ignoreDeadLinks: true,
   lastUpdated: true,
   sitemap: {
-    hostname: "https://yourdomain.com",
+    // Optional: Update your domain to match the deployment location
+    hostname: "https://otouat.github.io/portfolio-blog/",
     transformItems: (items) => {
       return items.filter(
         (item) => !hiddenPosts.has(item.url.replace(/\.html$/, "")),
