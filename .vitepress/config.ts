@@ -13,7 +13,7 @@ const { posts, hiddenPosts, excludePosts, descriptionMap, rewrites } =
 export default defineConfig<ThemeConfig>({
   // Add this line right here
   base: "/portfolio-blog/",
-
+  head: [["link", { rel: "icon", href: "/favicon.ico" }]],
   title: "Ousmane Touat",
   titleTemplate: "Ousmane Touat",
   description: "My personal blog",
