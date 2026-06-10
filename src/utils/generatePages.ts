@@ -35,7 +35,7 @@ ${custom}
 ---
 layout: page
 ---
-<Home imgUrl="/profilePic.jpg" title="Ousmane Touat" desc="Personal." :links="[{ url: 'https://github.com/izhichao/otouat', text: 'Github ->' }]" />
+<Home imgUrl="/profilePic.jpg" title="Ousmane Touat" desc="Personal." :links="[{ url: 'https://github.com/otouat', text: 'Github ->' }]" />
     `.trim();
     await fs.writeFile(indexPath, page);
   }
