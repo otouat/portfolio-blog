@@ -14,8 +14,8 @@ export default defineConfig<ThemeConfig>({
   // Add this line right here
   base: "/portfolio-blog/",
 
-  title: "My Blog",
-  titleTemplate: "My Blog",
+  title: "Ousmane Touat",
+  titleTemplate: "Ousmane Touat",
   description: "My personal blog",
   rewrites,
   cleanUrls: true,
@@ -62,7 +62,6 @@ export default defineConfig<ThemeConfig>({
         'Theme by <a href="https://github.com/izhichao/vitepress-theme-minimalism" target="_blank">Minimalism</a>',
       copyright: `Copyright © 2024-${new Date().getFullYear()} <a href="https://github.com/otouat" target="_blank">Ousmane Touat</a>`,
     },
-    search: { provider: "local" },
   },
   markdown: {
     lineNumbers: true,

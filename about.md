@@ -5,7 +5,7 @@ profile:
   name: Ousmane Touat
   title: PhD Student & Research Engineer
   bio: Specializing in Decentralized Learning, Federated Learning security, and Graph Neural Networks.
-  avatar: /profilePic.jpg
+  avatar: /portfolio-blog/profilePic.jpg
   location: Lyon, France
   email: ousmanetouat@outlook.com
 socials:
