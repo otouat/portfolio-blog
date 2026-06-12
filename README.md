@@ -4,4 +4,4 @@ Personal blog and portfolio built with [VitePress](https://vitepress.dev/) using
 
 ## 🚀 Deployment Status
 
-[![Deployment Status](https://img.shields.io/github/actions/workflow/status/otouat/my-personal-blog/deploy.yml?branch=main&style=flat-square&logo=github&label=Deployed)](https://github.com/otouat/my-personal-blog/actions)
+[![Deployment Status](https://img.shields.io/github/actions/workflow/status/otouat/my-personal-blog/deploy.yml?branch=master&style=flat-square&logo=github&label=Deployed)](https://github.com/otouat/my-personal-blog/actions)
